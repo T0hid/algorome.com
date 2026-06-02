@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorome | Multi-Omics Intelligence</title>
+    <meta name="description" content="Algorome leverages AI to decode multi-omics data, providing high-fidelity variant classification and severity prediction.">
+    
+    <link rel="icon" type="image/png" href="Gemini_Generated_Image_j48q2wj48q2wj48q.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+    <style>
+        /* --- CSS VARIABLES & THEME CONFIGURATION --- */
+        :root {
+            /* Dark Theme (Default) */
+            --bg-body: #050a14;
+            --bg-nav: rgba(5, 10, 20, 0.85);
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --border-card: rgba(255, 255, 255, 0.08);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary-cyan: #00f2ff;
+            --primary-green: #00ff9d;
+            --accent-glow: rgba(0, 242, 255, 0.4);
+            --gradient-main: linear-gradient(135deg, var(--primary-cyan), var(--primary-green));
+            --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.3);
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --tab-active-bg: rgba(0, 242, 255, 0.1);
+            --banner-bg: #0f172a;
+        }
+
+        /* Light Theme (Clinical Lab Style) */
+        [data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-nav: rgba(255, 255, 255, 0.9);
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --border-card: rgba(148, 163, 184, 0.2);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary-cyan: #0ea5e9;
+            --primary-green: #10b981;
+            --accent-glow: rgba(14, 165, 233, 0.2);
+            --gradient-main: linear-gradient(135deg, #0284c7, #059669);
+            --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.05);
+            --tab-active-bg: rgba(2, 132, 199, 0.1);
+            --banner-bg: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .gradient-text {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .btn-primary {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-cyan);
+            color: #050a14;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+        
+        [data-theme="light"] .btn-primary:hover {
+            color: #fff;
+        }
+
+        /* New Login Button Style */
+        .btn-login {
+            border: 1px solid var(--border-card);
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-login:hover {
+            border-color: var(--primary-green);
+            color: var(--primary-green) !important;
+            background: rgba(0, 255, 157, 0.05);
+        }
+        .btn-login::after { display: none !important; }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            padding: 1.5rem 0;
+            backdrop-filter: blur(0px);
+        }
+
+        nav.scrolled {
+            padding: 1rem 0;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-card);
+            box-shadow: var(--shadow-card);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 62px; 
+            width: auto;
+            transition: filter 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:not(.btn-login)::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gradient-main);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:not(.btn-login):hover::after,
+        .nav-links a.active-link:not(.btn-login)::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary-cyan);
+            color: var(--primary-cyan);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* --- PAGE VIEWS (Routing) --- */
+        .page-view {
+            display: none;
+            flex-grow: 1;
+            animation: fadeInPage 0.5s ease forwards;
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #neural-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg-body) 90%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 900px;
+        }
+
+        .hero-content h1 {
+            font-size: 4.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            min-height: 2.2em;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 4px;
+            background-color: var(--primary-cyan);
+            animation: blink 1s infinite;
+            margin-left: 5px;
+            height: 0.8em;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 2.5s forwards;
+        }
+
+        .hero-btn-wrapper {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 2.7s forwards;
+        }
+
+        /* --- INTEGRATIONS STRIP --- */
+        .integrations-strip {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-card);
+            background: rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-family: var(--font-code);
+            overflow: hidden;
+        }
+        
+        .marquee-content {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .integration-item {
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .integration-item:hover { opacity: 1; color: var(--primary-cyan); }
+
+        /* --- GENERAL SECTIONS --- */
+        section {
+            padding: 6rem 0;
+        }
+        
+        .page-header-padding {
+            padding-top: 10rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.5s ease;
+        }
+
+        .glass-card:hover {
+            border-color: var(--primary-cyan);
+            transform: translateY(-5px);
+        }
+
+        /* Tech Section */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tech-card {
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-main);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tech-card:hover::before {
+            opacity: 1;
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-cyan);
+            font-family: var(--font-code);
+        }
+
+        .tech-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .tech-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- PRODUCTS SECTION --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            padding: 3rem 2rem;
+        }
+
+        .product-logo-wrapper {
+            background: #ffffff; /* Gives high contrast for dark text logos */
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            border: 1px solid var(--border-card);
+        }
+
+        [data-theme="light"] .product-logo-wrapper {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .product-logo {
+            max-height: 80px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .product-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--primary-cyan);
+        }
+
+        .product-card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .product-inactive {
+            opacity: 0.7;
+            filter: grayscale(0.6);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .product-inactive:hover {
+            transform: none;
+            border-color: var(--border-card);
+        }
+
+        .inactive-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 20, 0.4);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        [data-theme="light"] .inactive-overlay {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .badge-development {
+            font-family: var(--font-code);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: var(--primary-green);
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid var(--primary-green);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0, 255, 157, 0.2);
+        }
+
+        /* --- SECURITY & COMPLIANCE --- */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .security-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0,255,157,0.03);
+            border-radius: 8px;
+            border: 1px solid var(--border-card);
+        }
+        
+        .security-item h4 {
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            background: var(--border-card);
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* --- CONTACT --- */
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            font-family: var(--font-code);
+        }
+
+        input, textarea {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-card);
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+        
+        [data-theme="light"] input, 
+        [data-theme="light"] textarea {
+            background: rgba(255,255,255,0.8);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* --- ABOUT CONTENT STYLING --- */
+        .about-content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .about-content-wrapper h3 {
+            color: var(--text-main);
+            font-size: 1.8rem;
+            margin: 3rem 0 1.5rem;
+        }
+
+        .about-content-wrapper p {
+            margin-bottom: 1.5rem;
+        }
+
+        .about-content-wrapper ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .about-content-wrapper li {
+            margin-bottom: 1.5rem;
+            background: rgba(15, 23, 42, 0.3);
+            border-left: 3px solid var(--primary-cyan);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        [data-theme="light"] .about-content-wrapper li {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .about-content-wrapper li strong {
+            color: var(--primary-green);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-code);
+            font-size: 1rem;
+        }
+
+        /* --- COOKIE BANNER --- */
+        .cookie-banner {
+            position: fixed;
+            bottom: -100px;
+            left: 0;
+            width: 100%;
+            background: var(--banner-bg);
+            border-top: 1px solid var(--border-card);
+            padding: 1rem 0;
+            z-index: 2000;
+            transition: bottom 0.5s ease;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .cookie-banner.visible {
+            bottom: 0;
+        }
+
+        .cookie-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cookie-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .cookie-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid var(--border-card);
+            background: transparent;
+            color: var(--text-main);
+        }
+
+        .btn-small:hover {
+            border-color: var(--primary-green);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border-card);
+            padding: 4rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background-color: var(--bg-body);
+            margin-top: auto; /* Pushes footer to bottom */
+        }
+
+        .footer-cols {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            color: var(--text-main);
+        }
+
+        .footer-col h4 {
+            color: var(--text-main);
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-col a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--primary-cyan);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+            transition: fill 0.3s, transform 0.3s;
+        }
+
+        .social-icon:hover {
+            fill: var(--primary-cyan);
+            transform: translateY(-3px);
+        }
+
+        /* Hide Netlify Identity widget's default button */
+        [data-netlify-identity-button],
+        [data-netlify-identity-menu] { display: none !important; }
+
+        /* --- AUTH MODAL --- */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 15, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+        .auth-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .auth-box {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            margin: 1rem;
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(0,242,255,0.25), 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,242,255,0.08);
+            animation: authBoxIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes authBoxIn {
+            from { transform: translateY(24px) scale(0.97); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Gradient top bar */
+        .auth-top-bar {
+            height: 3px;
+            background: var(--gradient-main);
+        }
+
+        .auth-header {
+            padding: 2rem 2.5rem 0;
+        }
+        .auth-logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.8rem;
+        }
+        .auth-logo-text {
+            font-family: var(--font-code);
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+        .auth-close {
+            background: transparent;
+            border: 1px solid var(--border-card);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .auth-close:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border-card);
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 0.9rem 0;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-family: var(--font-code);
+            color: var(--text-muted);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .auth-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-main);
+            transform: scaleX(0);
+            transition: transform 0.25s ease;
+        }
+        .auth-tab.active {
+            color: var(--text-main);
+        }
+        .auth-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        /* Form body */
+        .auth-body {
+            padding: 2rem 2.5rem 2.5rem;
+        }
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+
+        .auth-field {
+            margin-bottom: 1.2rem;
+        }
+        .auth-field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--primary-green);
+            font-family: var(--font-code);
+            margin-bottom: 0.45rem;
+        }
+        .auth-field input {
+            width: 100%;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--border-card);
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        [data-theme="light"] .auth-field input {
+            background: rgba(255,255,255,0.8);
+        }
+        .auth-field input:focus {
+            outline: none;
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 0 3px rgba(0,242,255,0.12);
+        }
+        .auth-field input::placeholder { color: #475569; }
+
+        /* Password wrapper */
+        .pw-wrap {
+            position: relative;
+        }
+        .pw-wrap input {
+            padding-right: 3rem;
+        }
+        .pw-toggle {
+            position: absolute;
+            right: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .pw-toggle:hover { color: var(--text-main); }
+
+        /* Forgot password */
+        .auth-forgot {
+            text-align: right;
+            margin-top: -0.6rem;
+            margin-bottom: 1.2rem;
+        }
+        .auth-forgot a {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .auth-forgot a:hover { color: var(--primary-cyan); }
+
+        /* Submit button */
+        .auth-submit {
+            width: 100%;
+            padding: 0.95rem;
+            background: transparent;
+            border: 1px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-family: var(--font-code);
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+            margin-top: 0.5rem;
+        }
+        .auth-submit:hover:not(:disabled) {
+            background: var(--primary-cyan);
+            color: #050a14;
+            box-shadow: 0 0 30px rgba(0,242,255,0.35);
+        }
+        .auth-submit:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* Loading spinner */
+        .auth-spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0,242,255,0.2);
+            border-top-color: var(--primary-cyan);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .auth-submit.loading .auth-submit-text { display: none; }
+        .auth-submit.loading .auth-spinner { display: block; }
+
+        /* Messages */
+        .auth-msg {
+            display: none;
+            font-size: 0.82rem;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .auth-msg.error {
+            background: rgba(255,107,107,0.08);
+            border: 1px solid rgba(255,107,107,0.4);
+            color: #ff8a8a;
+        }
+        .auth-msg.info {
+            background: rgba(0,242,255,0.06);
+            border: 1px solid rgba(0,242,255,0.25);
+            color: var(--primary-cyan);
+        }
+        .auth-msg.success {
+            background: rgba(0,255,157,0.06);
+            border: 1px solid rgba(0,255,157,0.25);
+            color: var(--primary-green);
+        }
+
+        /* Email sent state */
+        .auth-email-sent {
+            display: none;
+            text-align: center;
+            padding: 1rem 0 0.5rem;
+        }
+        .auth-email-sent .email-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .auth-email-sent h4 {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+        }
+        .auth-email-sent p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+        .auth-email-sent .resend-link {
+            display: inline-block;
+            margin-top: 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+        .auth-email-sent .resend-link:hover { color: var(--primary-cyan); }
+
+        /* Nav user state */
+        .nav-avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            color: #050a14;
+            font-size: 0.65rem;
+            font-weight: 800;
+            font-family: var(--font-code);
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .nav-user-wrap {
+            position: relative;
+        }
+        .nav-user-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            background: var(--bg-nav);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 0.5rem;
+            min-width: 220px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+        }
+        .nav-user-menu.open { display: block; }
+        .nav-user-menu-email {
+            padding: 0.4rem 0.8rem 0.6rem;
+            font-size: 0.73rem;
+            color: var(--text-muted);
+            font-family: var(--font-code);
+            border-bottom: 1px solid var(--border-card);
+            margin-bottom: 0.4rem;
+            word-break: break-all;
+        }
+        .nav-menu-item {
+            display: block;
+            width: 100%;
+            padding: 0.55rem 0.8rem;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+            font-family: var(--font-main);
+        }
+        .nav-menu-item:hover {
+            background: rgba(0,242,255,0.08);
+            color: var(--primary-cyan);
+        }
+        .nav-menu-item.danger:hover {
+            background: rgba(255,107,107,0.08);
+            color: #ff8a8a;
+        }
+
+        /* --- CONTACT FORM FEEDBACK --- */
+        .contact-feedback {
+            display: none;
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+        .contact-feedback.success {
+            background: rgba(0, 255, 157, 0.08);
+            border: 1px solid var(--primary-green);
+            color: var(--primary-green);
+        }
+        .contact-feedback.error {
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background: var(--bg-nav);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: right 0.3s ease;
+                box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+                border-left: 1px solid var(--border-card);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                z-index: 1001;
+            }
+
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+
+            .product-grid, .security-grid, .footer-cols {
+                grid-template-columns: 1fr;
+            }
+            
+            .cookie-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="container nav-content">
+            <a href="#home" class="logo-container">
+                <img src="Gemini_Generated_Image_j48q2wj48q2wj48q.png" alt="Algorome Logo" class="logo-img">
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#technology">Technology</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="nav-user-wrap" id="nav-user-wrap">
+                    <a href="#" id="nav-portal-link" class="btn-login" onclick="handlePortalClick(event)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        <span id="nav-portal-text">Portal</span>
+                    </a>
+                    <div class="nav-user-menu" id="nav-user-menu">
+                        <div class="nav-user-menu-email" id="nav-user-email"></div>
+                        <button class="nav-menu-item" onclick="launchApp('https://severity-calculator-2aptetqprm7xbrafdgppbz.streamlit.app/')">Open OntoSeverity Score</button>
+                        <button class="nav-menu-item" onclick="launchApp('https://finder.algorome.com/')">Open Association Finder</button>
+                        <button class="nav-menu-item danger" onclick="handleLogout()">Sign Out</button>
+                    </div>
+                </li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                </li>
+            </ul>
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </nav>
+
+    <!-- ==================== PAGE 1: HOME ==================== -->
+    <main id="home-page" class="page-view">
+        <header class="hero">
+            <canvas id="neural-canvas"></canvas>
+            <div class="hero-overlay"></div>
+            
+            <div class="container hero-content">
+                <h1>
+                    <span id="typewriter-line1"></span><br>
+                    <span id="typewriter-line2" class="gradient-text"></span>
+                    <span class="cursor">|</span>
+                </h1>
+                <p>Algorome transforms raw sequencing data into research-grade biological insights using proprietary probability models.</p>
+                <div class="hero-btn-wrapper">
+                    <a href="#products" class="btn btn-primary">Explore Platform</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="integrations-strip">
+            <div class="container">
+                <div class="marquee-content">
+                    <div class="integration-item">// WORKFLOW INTEGRATION:</div>
+                    <div class="integration-item">ILLUMINA (FASTQ)</div>
+                    <div class="integration-item">OXFORD NANOPORE (POD5/FASTQ)</div>
+                    <div class="integration-item">PACBIO (HIFI)</div>
+                    <div class="integration-item">GATK COMPLIANT</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== PAGE 2: ABOUT ==================== -->
+    <section id="about-page" class="page-view page-header-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2>About <span class="gradient-text">Algorome</span></h2>
+            </div>
+            
+            <div class="about-content-wrapper">
+                <p>At Algorome, we bridge the gap between artificial intelligence and biological complexity. Modern research generates enormous amounts of data across multiple layers of biology, including genomics, transcriptomics, proteomics, and metabolomics. While this "omics" data holds the key to understanding complex diseases and biological systems, its sheer volume and intricacy create a significant analytical bottleneck.</p>
+                
+                <p>Algorome is built to solve this exact issue. We develop and deploy advanced AI algorithms to decode omics data, transforming raw biological information into clear, actionable insights.</p>
+                
+                <h3>What We Do</h3>
+                <p>Traditional analytical tools often struggle to process the high dimensionality of omics datasets. Our algorithms are specifically designed to handle these unique challenges. We focus our technology on:</p>
+                
+                <ul>
+                    <li>
+                        <strong>Pattern Recognition</strong>
+                        We utilize machine learning to identify hidden biological signatures, pathways, and biomarkers that human analysis or standard statistics might miss.
+                    </li>
+                    <li>
+                        <strong>Data Integration</strong>
+                        Biology does not happen in isolation. Our AI models harmonize diverse omics data types to provide a comprehensive, systemic view of biological processes.
+                    </li>
+                    <li>
+                        <strong>Predictive Analytics</strong>
+                        We aim to accelerate drug discovery and precision medicine by predicting how biological systems will respond to different therapeutic interventions.
+                    </li>
+                </ul>
+
+                <h3>Our Mission</h3>
+                <p>Our mission is to empower researchers, clinicians, and biotech innovators with the computational tools they need to make faster, more accurate discoveries. By letting artificial intelligence handle the heavy lifting of multi-omics data analysis, Algorome enables scientists to focus on what matters most: solving real world medical and biological challenges.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PAGE 3: PRODUCTS ==================== -->
+    <section id="products-page" class="page-view page-header-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our <span class="gradient-text">Products</span></h2>
+                <p style="color: var(--text-muted);">Specialized workflows for diagnostic challenges.</p>
+            </div>
+
+            <div class="product-grid">
+                <!-- Product 1 -->
+                <div class="glass-card product-card">
+                    <div>
+                        <div class="product-logo-wrapper">
+                            <img src="Severity _Calculator.png" alt="OntoSeverity Score Logo" class="product-logo">
+                        </div>
+                        <h3>OntoSeverity Score</h3>
+                        <p>Evaluate and quantify clinical severity using Human Phenotype Ontology (HPO) terms. Whether analyzing a single case or processing large batch datasets, the calculator instantly filters input phenotypes to generate a continuous severity score from 0 to 100, alongside a categorical label ranging from Mild to Profound.</p>
+                    </div>
+                    <div>
+                        <a href="#" onclick="openPortalModal('https://severity-calculator-2aptetqprm7xbrafdgppbz.streamlit.app/'); return false;" class="btn btn-primary">Launch App</a>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="glass-card product-card">
+                    <div>
+                        <div class="product-logo-wrapper">
+                            <img src="association_finder.png" alt="Association Finder Logo" class="product-logo">
+                        </div>
+                        <h3>Association Finder</h3>
+                        <p>Association Finder automatically scans scientific literature to find hidden connections between genes, diseases, and physical traits based on your search terms, saving you from reading hundreds of papers manually.</p>
+                    </div>
+                    <div>
+                        <a href="#" onclick="openPortalModal('https://association-finder-lucid-stream-422.fly.dev/'); return false;" class="btn btn-primary">Launch App</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PAGE 4: TECHNOLOGY ==================== -->
+    <section id="technology-page" class="page-view page-header-padding">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Core <span class="gradient-text">Engine</span></h2>
+                <p style="color: var(--text-muted);">Built for precision and reproducibility.</p>
+            </div>
+            
+            <div class="card-grid">
+                <div class="glass-card tech-card">
+                    <div class="tech-icon">&lt;Genomics /&gt;</div>
+                    <h3>Deep Sequencing</h3>
+                    <p>Analyzing genomic patterns using DNA language models to contextualize gene regulation beyond standard exome sequencing.</p>
+                </div>
+                <div class="glass-card tech-card">
+                    <div class="tech-icon">{ Proteomics }</div>
+                    <h3>Structural Impact</h3>
+                    <p>Utilizing AlphaFold-derived predictions to assess how specific amino acid substitutions alter protein stability and function.</p>
+                </div>
+                <div class="glass-card tech-card">
+                    <div class="tech-icon">[ Phenomics ]</div>
+                    <h3>Phenotypic Analysis</h3>
+                    <p>Systematic evaluation of a patient's observable physical, cognitive, and biochemical traits to bridge genotype-phenotype relationships.</p>
+                </div>
+            </div>
+
+            <div class="security-grid">
+                <div class="security-item">
+                    <h4>Data Sovereignty</h4>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">Data is processed locally within region-specific enclaves to ensure compliance with national health data laws.</p>
+                    <span class="badge">GDPR READY</span>
+                </div>
+                <div class="security-item">
+                    <h4>Encryption Standards</h4>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">AES-256 encryption at rest and TLS 1.3 in transit. We utilize zero-trust architecture for all API endpoints.</p>
+                    <span class="badge">ISO 27001 (PENDING)</span>
+                </div>
+                <div class="security-item">
+                    <h4>Clinical Validation</h4>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">Algorithms are benchmarked against ClinVar and HGMD datasets. Whitepapers available upon request.</p>
+                    <span class="badge">VALIDATION: IN PROCESS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PAGE 5: CONTACT ==================== -->
+    <section id="contact-page" class="page-view page-header-padding">
+        <div class="container contact-container">
+            <div class="section-header">
+                <h2>Request <span class="gradient-text">Access</span></h2>
+                <p style="color: var(--text-muted);">Partner with us for clinical validation pilots.</p>
+            </div>
+            
+            <!-- Contact Form (AJAX via FormSubmit.co) -->
+            <div class="glass-card" id="contact-form-wrapper">
+                <div class="form-group">
+                    <label>INSTITUTION / NAME</label>
+                    <input type="text" id="contact-name" placeholder="e.g. Garvan Institute" required>
+                </div>
+                <div class="form-group">
+                    <label>ACADEMIC EMAIL</label>
+                    <input type="email" id="contact-email" placeholder="researcher@institute.edu.au" required>
+                </div>
+                <div class="form-group">
+                    <label>INQUIRY</label>
+                    <textarea id="contact-message" rows="5" placeholder="Describe your sequencing cohort or specific interest..." required></textarea>
+                </div>
+                <button id="contact-submit-btn" class="btn btn-primary" style="margin-top: 1rem; border: none;" onclick="submitContactForm()">
+                    Submit Inquiry
+                </button>
+                <div class="contact-feedback" id="contact-feedback"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER (Always Visible) ==================== -->
+    <footer>
+        <div class="container">
+            <div class="footer-cols">
+                <div class="footer-col">
+                    <div class="footer-logo">ALGOROME</div>
+                    <p>At the intersection of Algorithms and Omics, Algorome leverages state-of-the-art AI to transform raw sequencing data into actionable clinical insights.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/112092163/" target="_blank" aria-label="LinkedIn"><svg class="social-icon" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+                        <a href="#" aria-label="X (Twitter)"><svg class="social-icon" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                        <a href="#" aria-label="GitHub"><svg class="social-icon" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">System Status (Alpha)</a></li>
+                        <li><a href="#">Security Overview</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal & Privacy</h4>
+                    <ul>
+                        <li><a href="#" onclick="alert('Document under legal review.'); return false;">Privacy Policy (Draft)</a></li>
+                        <li><a href="#" onclick="alert('Document under legal review.'); return false;">Terms of Service</a></li>
+                        <li><a href="#" onclick="alert('Document under legal review.'); return false;">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div style="border-top: 1px solid var(--border-card); padding-top: 1.5rem; text-align: center;">
+                <p>&copy; 2026 Algorome Pty Ltd. Sydney, NSW, Australia. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== AUTH MODAL ==================== -->
+    <div class="auth-overlay" id="auth-overlay">
+        <div class="auth-box" id="auth-box">
+            <div class="auth-top-bar"></div>
+
+            <div class="auth-header">
+                <div class="auth-logo-row">
+                    <span class="auth-logo-text">// ALGOROME PORTAL</span>
+                    <button class="auth-close" onclick="closeAuthModal()" aria-label="Close">✕</button>
+                </div>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tab-signup" onclick="switchTab('signup')">SIGN UP</button>
+                    <button class="auth-tab" id="tab-login" onclick="switchTab('login')">SIGN IN</button>
+                </div>
+            </div>
+
+            <div class="auth-body">
+
+                <!-- SIGN UP PANEL -->
+                <div class="auth-panel active" id="panel-signup">
+                    <div id="signup-form-view">
+                        <div class="auth-field">
+                            <label>FULL NAME</label>
+                            <input type="text" id="su-name" placeholder="Dr. Jane Smith" autocomplete="name">
+                        </div>
+                        <div class="auth-field">
+                            <label>INSTITUTIONAL EMAIL</label>
+                            <input type="email" id="su-email" placeholder="researcher@institute.edu.au" autocomplete="email">
+                        </div>
+                        <div class="auth-field">
+                            <label>PASSWORD</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="su-password" placeholder="Min. 8 characters" autocomplete="new-password">
+                                <button type="button" class="pw-toggle" onclick="togglePw('su-password', this)" tabindex="-1">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>CONFIRM PASSWORD</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="su-password2" placeholder="Repeat password" autocomplete="new-password">
+                                <button type="button" class="pw-toggle" onclick="togglePw('su-password2', this)" tabindex="-1">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="auth-submit" id="su-btn" onclick="handleSignUp()">
+                            <span class="auth-submit-text">CREATE ACCOUNT</span>
+                            <div class="auth-spinner"></div>
+                        </button>
+                        <div class="auth-msg" id="su-msg"></div>
+                    </div>
+                    <!-- Email sent confirmation -->
+                    <div class="auth-email-sent" id="signup-email-sent">
+                        <span class="email-icon">📬</span>
+                        <h4>Check your inbox</h4>
+                        <p>We sent a verification link to <strong id="su-sent-email" style="color:var(--primary-cyan)"></strong>.<br>Click the link to activate your account, then sign in.</p>
+                        <span class="resend-link" onclick="switchTab('login')">Go to Sign In</span>
+                    </div>
+                </div>
+
+                <!-- SIGN IN PANEL -->
+                <div class="auth-panel" id="panel-login">
+                    <div id="login-form-view">
+                        <div class="auth-field">
+                            <label>EMAIL</label>
+                            <input type="email" id="li-email" placeholder="researcher@institute.edu.au" autocomplete="email">
+                        </div>
+                        <div class="auth-field">
+                            <label>PASSWORD</label>
+                            <div class="pw-wrap">
+                                <input type="password" id="li-password" placeholder="Your password" autocomplete="current-password">
+                                <button type="button" class="pw-toggle" onclick="togglePw('li-password', this)" tabindex="-1">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="auth-forgot">
+                            <a href="#" onclick="handleForgotPassword(event)">Forgot password?</a>
+                        </div>
+                        <button class="auth-submit" id="li-btn" onclick="handleSignIn()">
+                            <span class="auth-submit-text">SIGN IN</span>
+                            <div class="auth-spinner"></div>
+                        </button>
+                        <div class="auth-msg" id="li-msg"></div>
+                    </div>
+                </div>
+
+            </div><!-- end auth-body -->
+        </div>
+    </div>
+
+    <div id="cookie-banner" class="cookie-banner">
+        <div class="container cookie-content">
+            <div class="cookie-text">
+                This website uses cookies to analyze traffic and improve user experience. By continuing to use this site, you consent to our use of cookies in accordance with our Privacy Policy.
+            </div>
+            <div class="cookie-buttons">
+                <button class="btn-small" onclick="acceptCookies()">Accept</button>
+                <button class="btn-small" style="opacity: 0.7;" onclick="acceptCookies()">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 0. MULTI-PAGE ROUTING LOGIC ---
+        function handleRouting() {
+            // Get the hash from the URL, default to #home
+            let hash = window.location.hash || '#home';
+            
+            // Hide all pages
+            document.querySelectorAll('.page-view').forEach(page => {
+                page.style.display = 'none';
+            });
+
+            // Show the target page based on the hash
+            const targetPage = document.querySelector(hash + '-page');
+            if (targetPage) {
+                targetPage.style.display = 'block';
+            } else {
+                // Fallback to home if page doesn't exist
+                document.getElementById('home-page').style.display = 'block';
+                hash = '#home';
+            }
+
+            // Scroll to the very top when a "new page" opens
+            window.scrollTo(0, 0);
+
+            // Update the active link styling in the navbar
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active-link');
+                if (link.getAttribute('href') === hash) {
+                    link.classList.add('active-link');
+                }
+            });
+            
+            // Close the mobile menu if it was open
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                document.querySelector('.mobile-menu-btn').textContent = '☰';
+            }
+        }
+
+        // Listen for back/forward button clicks or nav link clicks
+        window.addEventListener('hashchange', handleRouting);
+        // Run routing once when the page initially loads
+        window.addEventListener('DOMContentLoaded', handleRouting);
+
+
+        // --- 1. NEURAL NETWORK CANVAS ANIMATION ---
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        const particleCount = 70;
+        const connectionDistance = 150;
+        const mouseDistance = 200;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX;
+            mouse.y = e.clientY - rect.top;
+        });
+        window.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < mouseDistance) {
+                        const force = (mouseDistance - distance) / mouseDistance;
+                        this.vx += (dx / distance) * force * 0.05;
+                        this.vy += (dy / distance) * force * 0.05;
+                    }
+                }
+            }
+            draw() {
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                ctx.fillStyle = isLight ? 'rgba(16, 185, 129, 0.7)' : 'rgba(0, 242, 255, 0.7)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+        }
+        initParticles();
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Only draw particles if we are on the home page to save performance
+            if (window.location.hash !== '#home' && window.location.hash !== '') {
+                requestAnimationFrame(animate);
+                return;
+            }
+
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            const baseColor = isLight ? '16, 185, 129' : '0, 242, 255';
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        let opacity = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = `rgba(${baseColor}, ${opacity * 0.5})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- 2. TYPEWRITER ---
+        const line1Text = "ALGOROME";
+        const line2Text = "At the intersection of Algorithms and Omics";
+        const line1El = document.getElementById('typewriter-line1');
+        const line2El = document.getElementById('typewriter-line2');
+        
+        function typeWriter(text, element, callback) {
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                } else if (callback) callback();
+            }
+            type();
+        }
+        setTimeout(() => {
+            typeWriter(line1Text, line1El, () => {
+                typeWriter(line2Text, line2El);
+            });
+        }, 500);
+
+        // --- 3. COOKIE BANNER LOGIC ---
+        function acceptCookies() {
+            document.getElementById('cookie-banner').classList.remove('visible');
+            localStorage.setItem('cookieConsent', 'true');
+        }
+        
+        setTimeout(() => {
+            if(!localStorage.getItem('cookieConsent')) {
+                document.getElementById('cookie-banner').classList.add('visible');
+            }
+        }, 2000);
+
+        // --- 4. THEME & UTILS ---
+        const toggleBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        toggleBtn.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            if(next === 'dark') {
+                document.querySelector('.sun-icon').style.display = 'none';
+                document.querySelector('.moon-icon').style.display = 'block';
+            } else {
+                document.querySelector('.sun-icon').style.display = 'block';
+                document.querySelector('.moon-icon').style.display = 'none';
+            }
+        });
+
+        // Navbar scroll styling
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Mobile menu toggle
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinksElement = document.querySelector('.nav-links');
+        menuBtn.addEventListener('click', () => {
+            navLinksElement.classList.toggle('active');
+            menuBtn.textContent = navLinksElement.classList.contains('active') ? '✕' : '☰';
+        });
+        
+        // --- 5. AUTH (Netlify Identity) ---
+        const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/tohidgasemnejad@gmail.com';
+
+        let currentUser = null;
+        let pendingAppUrl = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof netlifyIdentity === 'undefined') {
+                console.error('Netlify Identity widget failed to load.');
+                return;
+            }
+
+            // Init: also handles email confirmation links automatically
+            netlifyIdentity.init({ logo: false });
+
+            netlifyIdentity.on('init', user => {
+                currentUser = user;
+                refreshNavUser();
+            });
+
+            netlifyIdentity.on('login', user => {
+                currentUser = user;
+                netlifyIdentity.close();
+                refreshNavUser();
+                closeAuthModal();
+                // If they logged in by clicking Launch App, send them to the appropriate app
+                if (pendingAppUrl) {
+                    const launchUrl = pendingAppUrl;
+                    pendingAppUrl = null;
+                    setTimeout(() => window.open(launchUrl, '_blank'), 300);
+                }
+            });
+
+            netlifyIdentity.on('logout', () => {
+                currentUser = null;
+                refreshNavUser();
+            });
+        });
+
+        // Close user dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const wrap = document.getElementById('nav-user-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                document.getElementById('nav-user-menu').classList.remove('open');
+            }
+        });
+
+        function refreshNavUser() {
+            const link = document.getElementById('nav-portal-link');
+            if (currentUser && currentUser.confirmed_at) {
+                const meta = currentUser.user_metadata || {};
+                const name = meta.full_name || currentUser.email;
+                const initials = name.trim().split(/\s+/).map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                const firstName = name.split(' ')[0];
+                link.innerHTML = `<span class="nav-avatar">${initials}</span><span>${firstName}</span>`;
+                if (currentUser.email) {
+                    document.getElementById('nav-user-email').textContent = currentUser.email;
+                }
+            } else {
+                link.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg><span>Portal</span>`;
+            }
+        }
+
+        function handlePortalClick(e) {
+            e.preventDefault();
+            if (currentUser && currentUser.confirmed_at) {
+                document.getElementById('nav-user-menu').classList.toggle('open');
+            } else {
+                pendingAppUrl = null;
+                openAuthModal('login');
+            }
+        }
+
+        function handleLogout() {
+            document.getElementById('nav-user-menu').classList.remove('open');
+            currentUser = null;
+            refreshNavUser();
+            try {
+                if (typeof netlifyIdentity !== 'undefined') {
+                    netlifyIdentity.logout();
+                }
+            } catch (e) {
+                console.warn('Logout error:', e);
+            }
+            // Clear any stored tokens
+            Object.keys(localStorage).forEach(k => {
+                if (k.startsWith('gotrue-') || k.includes('netlify')) localStorage.removeItem(k);
+            });
+        }
+
+        function launchApp(url) {
+            document.getElementById('nav-user-menu').classList.remove('open');
+            window.open(url, '_blank');
+        }
+
+        // Called by "Launch App" buttons on Products page
+        function openPortalModal(url) {
+            if (currentUser && currentUser.confirmed_at) {
+                window.open(url, '_blank');
+            } else {
+                pendingAppUrl = url;
+                openAuthModal('login');
+            }
+        }
+
+        // ---- Auth Modal ----
+        function openAuthModal(tab) {
+            resetAuthModal();
+            switchTab(tab || 'login');
+            document.getElementById('auth-overlay').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-overlay').classList.remove('active');
+        }
+
+        document.getElementById('auth-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeAuthModal();
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        function resetAuthModal() {
+            document.getElementById('signup-form-view').style.display = 'block';
+            document.getElementById('signup-email-sent').style.display = 'none';
+            ['su-name','su-email','su-password','su-password2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            showMsg('su-msg', '', '');
+            setLoading('su-btn', false);
+            ['li-email','li-password'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            showMsg('li-msg', '', '');
+            setLoading('li-btn', false);
+        }
+
+        function showMsg(id, type, text) {
+            const el = document.getElementById(id);
+            el.className = 'auth-msg' + (type ? ' ' + type : '');
+            el.textContent = text;
+            el.style.display = text ? 'block' : 'none';
+        }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (loading) { btn.classList.add('loading'); btn.disabled = true; }
+            else { btn.classList.remove('loading'); btn.disabled = false; }
+        }
+
+        function togglePw(inputId, btn) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+            btn.style.color = input.type === 'text' ? 'var(--primary-cyan)' : '';
+        }
+
+        async function handleSignUp() {
+            const name  = document.getElementById('su-name').value.trim();
+            const email = document.getElementById('su-email').value.trim();
+            const pw    = document.getElementById('su-password').value;
+            const pw2   = document.getElementById('su-password2').value;
+
+            showMsg('su-msg', '', '');
+            if (!name || !email || !pw) { showMsg('su-msg', 'error', 'Please fill in all fields.'); return; }
+            if (pw.length < 8) { showMsg('su-msg', 'error', 'Password must be at least 8 characters.'); return; }
+            if (pw !== pw2) { showMsg('su-msg', 'error', 'Passwords do not match.'); return; }
+
+            setLoading('su-btn', true);
+            try {
+                await netlifyIdentity.gotrue.signup(email, pw, { full_name: name });
+
+                // Notify you of new registration
+                fetch(FORMSUBMIT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ _subject: 'New Algorome Portal Sign-Up', name, email, note: 'New account created.' })
+                }).catch(() => {});
+
+                // Log the new user straight in (requires email confirmation to be
+                // disabled in Netlify: Identity > Registration > Email confirmation = not required)
+                const user = await netlifyIdentity.gotrue.login(email, pw, true);
+
+                if (!user.confirmed_at) {
+                    // Safety net: this only happens if email confirmation is still
+                    // Required in Netlify. Send them to sign in rather than dead-ending.
+                    showMsg('su-msg', 'info', 'Account created. Please sign in.');
+                    setLoading('su-btn', false);
+                    setTimeout(() => switchTab('login'), 1200);
+                    return;
+                }
+
+                currentUser = user;
+                refreshNavUser();
+                setLoading('su-btn', false);
+                closeAuthModal();
+                if (pendingAppUrl) {
+                    const launchUrl = pendingAppUrl;
+                    pendingAppUrl = null;
+                    setTimeout(() => window.open(launchUrl, '_blank'), 300);
+                }
+
+            } catch (err) {
+                let msg = 'Sign-up failed. Please try again.';
+                try { const j = await err.json(); msg = j.msg || msg; } catch (_) { msg = err.message || msg; }
+                if (msg.toLowerCase().includes('already registered')) {
+                    showMsg('su-msg', 'info', 'Email already registered. Please sign in.');
+                    setTimeout(() => switchTab('login'), 1800);
+                } else {
+                    showMsg('su-msg', 'error', msg);
+                }
+                setLoading('su-btn', false);
+            }
+        }
+
+        async function handleSignIn() {
+            const email = document.getElementById('li-email').value.trim();
+            const pw    = document.getElementById('li-password').value;
+
+            showMsg('li-msg', '', '');
+            if (!email || !pw) { showMsg('li-msg', 'error', 'Please enter your email and password.'); return; }
+
+            setLoading('li-btn', true);
+            try {
+                const user = await netlifyIdentity.gotrue.login(email, pw, true);
+
+                if (!user.confirmed_at) {
+                    showMsg('li-msg', 'info', 'Please verify your email first. Check your inbox for the confirmation link.');
+                    setLoading('li-btn', false);
+                    return;
+                }
+
+                currentUser = user;
+                refreshNavUser();
+                closeAuthModal();
+                if (pendingAppUrl) {
+                    const launchUrl = pendingAppUrl;
+                    pendingAppUrl = null;
+                    setTimeout(() => window.open(launchUrl, '_blank'), 300);
+                }
+
+            } catch (err) {
+                let msg = 'Sign-in failed. Please try again.';
+                try { const j = await err.json(); msg = j.msg || msg; } catch (_) { msg = err.message || msg; }
+                if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credentials') || msg.toLowerCase().includes('password')) {
+                    showMsg('li-msg', 'error', 'Incorrect email or password.');
+                } else {
+                    showMsg('li-msg', 'error', msg);
+                }
+                setLoading('li-btn', false);
+            }
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('li-email').value.trim();
+            if (!email) { showMsg('li-msg', 'error', 'Enter your email address above first.'); return; }
+            try {
+                await netlifyIdentity.gotrue.requestPasswordRecovery(email);
+                showMsg('li-msg', 'success', 'Password reset email sent. Check your inbox.');
+            } catch (_) {
+                showMsg('li-msg', 'error', 'Could not send reset email. Please check the address.');
+            }
+        }
+
+        // --- 6. CONTACT FORM (AJAX) ---
+        async function submitContactForm() {
+            const name      = document.getElementById('contact-name').value.trim();
+            const email     = document.getElementById('contact-email').value.trim();
+            const message   = document.getElementById('contact-message').value.trim();
+            const feedback  = document.getElementById('contact-feedback');
+            const btn       = document.getElementById('contact-submit-btn');
+
+            feedback.style.display = 'none';
+            feedback.className = 'contact-feedback';
+
+            if (!name || !email || !message) {
+                feedback.textContent = 'Please fill in all fields before submitting.';
+                feedback.classList.add('error');
+                feedback.style.display = 'block';
+                return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                feedback.textContent = 'Please enter a valid email address.';
+                feedback.classList.add('error');
+                feedback.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(FORMSUBMIT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        _subject: 'New Inquiry from Algorome Website',
+                        name, email, message
+                    })
+                });
+                const data = await res.json();
+                if (data.success === 'true' || data.success === true) {
+                    feedback.textContent = 'Message sent. We will be in touch shortly.';
+                    feedback.classList.add('success');
+                    document.getElementById('contact-name').value = '';
+                    document.getElementById('contact-email').value = '';
+                    document.getElementById('contact-message').value = '';
+                } else {
+                    throw new Error('non-success');
+                }
+            } catch (_) {
+                feedback.textContent = 'Something went wrong. Please email us directly at tohidgasemnejad@gmail.com';
+                feedback.classList.add('error');
+            }
+
+            feedback.style.display = 'block';
+            btn.textContent = 'Submit Inquiry';
+            btn.disabled = false;
+        }
+
+    </script>
+</body>
+</html>
