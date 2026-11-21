@@ -253,17 +253,6 @@
         .product-card .btn { margin-top: auto; align-self: flex-start; }
         .product-card .product-note { margin: -12px 0 22px; font-size: 13px; color: var(--muted); }
 
-        /* Schematic preview for OntoSeverity (no screenshot available yet) */
-        .product-preview.is-schematic { overflow: visible; }
-        .schematic { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 14px 22px; }
-        .schematic-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--muted); }
-        .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-        .chip { font-family: var(--mono); font-size: 11.5px; padding: 4px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); }
-        .chip b { color: var(--accent); font-weight: 500; margin-right: 4px; }
-        .scale-bar { height: 10px; border-radius: 999px; background: linear-gradient(90deg, #4f9a6b 0%, #c9a43a 38%, #c9672e 68%, #8f2d2a 100%); }
-        .scale-ends { display: flex; justify-content: space-between; margin-top: 6px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
-        .scale-labels { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 500; color: var(--ink); }
-
         /* ---------- Technology ---------- */
         .tech-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; }
         .tech-item { padding-top: 22px; border-top: 2px solid var(--ink); }
@@ -533,23 +522,8 @@
 
                 <div class="product-grid">
                     <article class="product-card">
-                        <div class="product-preview is-schematic">
-                            <div class="schematic" aria-hidden="true">
-                                <div>
-                                    <div class="schematic-label">INPUT · HPO TERMS</div>
-                                    <div class="chips" style="margin-top:8px">
-                                        <span class="chip"><b>HP:0001250</b>Seizure</span>
-                                        <span class="chip"><b>HP:0001252</b>Hypotonia</span>
-                                        <span class="chip"><b>HP:0000252</b>Microcephaly</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="schematic-label" style="margin-bottom:8px">OUTPUT · SEVERITY SCORE</div>
-                                    <div class="scale-bar"></div>
-                                    <div class="scale-ends"><span>0</span><span>100</span></div>
-                                    <div class="scale-labels" style="margin-top:4px"><span>Mild</span><span>Moderate</span><span>Severe</span><span>Profound</span></div>
-                                </div>
-                            </div>
+                        <div class="product-preview">
+                            <img src="assets/screen-severity.webp" alt="OntoSeverity Score result: 61.0 out of 100, Severe, for three HPO terms" width="1600" height="1000" loading="lazy">
                         </div>
                         <div class="product-body">
                             <span class="product-tag">Severity</span>
